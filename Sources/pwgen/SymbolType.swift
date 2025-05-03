@@ -8,27 +8,11 @@
 import ArgumentParser
 import Foundation
 
-enum SymbolType: String, CaseIterable {
+enum SymbolType: CaseIterable {
     case lowerCaseLetters
     case upperCaseLetters
     case numbers
     case specialSymbols
-}
-
-extension SymbolType: ExpressibleByArgument {
-    init?(argument: String) {
-        let value = Self.allCases
-            .lazy
-            .first { (symbolType: SymbolType) -> Bool in
-                symbolType.rawValue == argument
-            }
-
-        if let value {
-            self = value
-        } else {
-            return nil
-        }
-    }
 }
 
 protocol GeneratesSymbolRangeString {
