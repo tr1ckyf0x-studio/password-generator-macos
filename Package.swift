@@ -10,7 +10,7 @@ let package = Package(
         .executable(name: "pwgen", targets: ["pwgen"])
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-argument-parser", exact: "1.3.0")
+        .package(url: "https://github.com/apple/swift-argument-parser", exact: "1.5.0")
     ],
     targets: [
         .executableTarget(
