@@ -15,6 +15,13 @@ enum SymbolType: CaseIterable {
     case specialSymbols
 }
 
+extension SymbolType {
+    static let similarCharacters: Set<Character> = [
+        "0", "O",       // zero / capital O
+        "l", "1", "I",  // lowercase L / one / capital I
+    ]
+}
+
 protocol GeneratesSymbolRangeString {
     func string(for symbolType: SymbolType) -> String
 }
@@ -34,7 +41,7 @@ extension SymbolType {
                 range = UInt32("0")...UInt32("9")
 
             case .specialSymbols:
-                return "!\";#$%&'()*+,-./:;<=>?@[]^_`{|}~"
+                return "!\"#$%&()*+,-./:;<=>?@[]^_{}~"
             }
 
             return range

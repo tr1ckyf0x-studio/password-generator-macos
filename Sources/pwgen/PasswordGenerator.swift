@@ -8,7 +8,7 @@
 import Foundation
 
 protocol GeneratesPassword {
-    func generatePassword(symbolTypes: [SymbolType], length: UInt) -> String
+    func generatePassword(symbolTypes: [SymbolType], length: UInt, includeSimilar: Bool) -> String
 }
 
 struct PasswordGenerator {
@@ -26,16 +26,21 @@ struct PasswordGenerator {
 extension PasswordGenerator: GeneratesPassword {
     func generatePassword(
         symbolTypes: [SymbolType],
-        length: UInt
+        length: UInt,
+        includeSimilar: Bool
     ) -> String {
-        let rangeString = symbolTypes
+        var pool = symbolTypes
             .map(symbolRangeStringFactory.string(for:))
             .joined()
-        
+
+        if !includeSimilar {
+            pool = pool.filter { !SymbolType.similarCharacters.contains($0) }
+        }
+
         return (0..<length)
             .lazy
             .compactMap { (_: UInt) -> Character? in
-                rangeString.randomElement()
+                pool.randomElement()
             }
             .map(String.init)
             .joined()

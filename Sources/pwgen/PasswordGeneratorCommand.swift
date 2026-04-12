@@ -12,53 +12,51 @@ struct PasswordGeneratorCommand: ParsableCommand {
     @Option(name: [.short, .long], help: "Length of the password")
     var length: UInt
 
-    @Flag(name: [.long], help: "Use lowercase letters")
+    @Flag(name: [.customShort("L"), .long], help: "Use lowercase letters")
     var lowercase: Bool = false
 
-    @Flag(name: [.long], help: "Use uppercase letters")
+    @Flag(name: [.customShort("U"), .long], help: "Use uppercase letters")
     var uppercase: Bool = false
 
-    @Flag(name: [.long], help: "Use numbers")
+    @Flag(name: [.customShort("N"), .long], help: "Use numbers")
     var numbers: Bool = false
-    
-    @Flag(name: [.short, .long], help: "Use special symbols")
+
+    @Flag(name: [.customShort("S"), .long], help: "Use special symbols")
     var special: Bool = false
 
-    @Flag(name: [.long], help: "Use default character set: lowercase, uppercase, numbers, special symbols")
-    var `default`: Bool = false
+    @Flag(name: [.long], help: "Use all character types")
+    var all: Bool = false
 
-    @Flag(name: [.customLong("no-special")], help: "Do not use special symbols")
-    var noSpecialSymbols: Bool = false
+    @Flag(name: .long, help: "Allow visually similar characters (0/O, l/1/I)")
+    var includeSimilar: Bool = false
 
     func run() throws {
-
-        var symbols = [
-            SymbolType.lowerCaseLetters: lowercase,
-            SymbolType.upperCaseLetters: uppercase,
-            SymbolType.numbers: numbers,
-            SymbolType.specialSymbols: special
-        ]
-
-        if `default` {
-            symbols.keys.forEach { symbols[$0] = true }
+        guard length > 0 else {
+            throw ValidationError("Length must be greater than 0")
         }
 
-        if noSpecialSymbols {
-            symbols[.specialSymbols] = false
+        let anyExplicit = lowercase || uppercase || numbers || special || all
+
+        var symbols: [SymbolType: Bool] = [
+            .lowerCaseLetters: anyExplicit ? lowercase : true,
+            .upperCaseLetters: anyExplicit ? uppercase : true,
+            .numbers:          anyExplicit ? numbers   : true,
+            .specialSymbols:   anyExplicit ? special   : false,
+        ]
+
+        if all {
+            symbols.keys.forEach { symbols[$0] = true }
         }
 
         let symbolTypes = symbols
             .filter { _, isIncluded in isIncluded }
             .map { symbolType, _ in symbolType }
 
-        if symbolTypes.isEmpty {
-            throw CleanExit.helpRequest(Self.self)
-        }
-
         let passwordGenerator = PasswordGenerator()
         let password = passwordGenerator.generatePassword(
             symbolTypes: symbolTypes,
-            length: length
+            length: length,
+            includeSimilar: includeSimilar
         )
 
         print(password)
