@@ -6,7 +6,7 @@ struct PasswordGeneratorCommand: ParsableCommand {
     public static let configuration = CommandConfiguration(
         commandName: "pwgen",
         abstract: "Generates password",
-        version: "1.1.0"
+        version: "2.0.0"
     )
 
     @Option(name: [.short, .long], help: "Length of the password")
